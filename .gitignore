@@ -174,3 +174,4 @@ cython_debug/
 *.ckpt
 *.pt
 *.imf
+*.mha
