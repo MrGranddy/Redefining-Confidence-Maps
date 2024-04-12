@@ -246,7 +246,7 @@ class UltrasoundConfidenceMap:
         # Gaussian weighting function
         s = -(
             (np.exp(-beta * s, dtype="float64")) + 10e-6
-        )  # --> This epsilon changes results drastically default: 1.e-6
+        )  # --> This epsilon changes results drastically default: 10.e-6
 
         # Create Laplacian, diagonal missing
         L = csc_matrix((s, (i, j)))
@@ -276,7 +276,7 @@ class UltrasoundConfidenceMap:
             lap_sparse = D.tocsr()
             ml = ruge_stuben_solver(lap_sparse, coarse_solver='pinv')
             M = ml.aspreconditioner(cycle='V')
-            maxiter = 200
+            maxiter = 300
             X, _ = cg(D, rhs, tol=tol, maxiter=maxiter, M=M)
 
         else:
