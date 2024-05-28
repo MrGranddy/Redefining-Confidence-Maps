@@ -179,7 +179,7 @@ cython_debug/
 *.dcm
 *.csv
 
-acyclic_directed_graphs/
+acyclic_directed_graph/
 Nakagami_Confidence_Maps/
 shadowConfidenceMap/
 samples/
