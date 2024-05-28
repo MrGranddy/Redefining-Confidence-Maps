@@ -80,7 +80,7 @@ def evaluate(dataset, method: str):
             # Get ground truth shadow mask
             test_shadow = test_dataset[test_view]["shadow"][random_slice]
             # Crop the shadow mask to the same size as the prediction
-            test_shadow = test_shadow[patch_size//2:-patch_size//2, patch_size//2:-patch_size//2]
+            test_shadow = test_shadow[patch_size//2:-(patch_size//2), patch_size//2:-(patch_size//2)]
 
             # Calculate precision
             tp = np.sum(np.logical_and(test_image_predictions == 1, test_shadow == 1))
@@ -101,7 +101,7 @@ def evaluate(dataset, method: str):
             avg_dice += dice
             avg_hd += hd
 
-            if view == 1:
+            if view == 0:
                 fig, ax = plt.subplots(1, 4, figsize=(15, 5))
                 ax[0].imshow(test_image, cmap="gray")
                 ax[0].set_title("Image")

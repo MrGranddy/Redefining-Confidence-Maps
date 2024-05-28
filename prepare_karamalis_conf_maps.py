@@ -5,28 +5,31 @@ import time
 
 from karamalis_confidence_map.confidence_monai import UltrasoundConfidenceMap
 
-cm = UltrasoundConfidenceMap(sink_mode="min")
+cm = UltrasoundConfidenceMap(sink_mode="mid")
 
-data_path = "C:/Users/Bugra/Desktop/masters-thesis/spine_all_sweeps_im.nii.gz"
-dest_path = "C:/Users/Bugra/Desktop/masters-thesis/spine_all_sweeps_im_conf_map_min.nii.gz"
+data_path = "C:/Users/Bugra/Desktop/masters-thesis/final_data/original/leg/images.npy"
+dest_path = "test.nii.gz"
 
 # Load the data
-data = nib.load(data_path).get_fdata()
+data = np.load(data_path)
 data = data.astype(np.float32) / 255.0
-
-data = np.swapaxes(data, 0, 2)
 
 conf_map = np.zeros(data.shape, dtype=np.uint8)
 
-start = time.time()
+log_interval = 10
+total_time = 0
 
 # Calculate the confidence map
 for i in range(data.shape[0]):
-    conf_map[i] = (cm(data[i]) * 255).astype(np.uint8)
 
-    if (i + 1) % 10 == 0:
-        print(f"Processed {i+1}/{data.shape[0]} slices in {time.time() - start} seconds")
-        start = time.time()
+    start = time.time()
+    conf_map[i] = (cm(data[i]) * 255).astype(np.uint8)
+    end = time.time()
+
+    total_time += end - start
+
+    if (i + 1) % log_interval == 0:
+        print(f"Processed {i+1}/{data.shape[0]}, average time: {total_time / (i + 1)} seconds, total time: {total_time} seconds, slice shape: {data[i].shape}, estimated total time: {(total_time / (i + 1)) * data.shape[0]} seconds")
 
 conf_map = np.swapaxes(conf_map, 0, 2)
 

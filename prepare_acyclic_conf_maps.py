@@ -5,26 +5,29 @@ import time
 
 from acyclic_directed_graph.confidence_with_dg import confidence_map
 
-data_path = "C:/Users/Bugra/Desktop/masters-thesis/liver_all_sweeps_im.nii.gz"
-dest_path = "C:/Users/Bugra/Desktop/masters-thesis/liver_all_sweeps_im_conf_map_acyclic.nii.gz"
+data_path = "C:/Users/Bugra/Desktop/masters-thesis/final_data/original/spine/images.npy"
+dest_path = "test.nii.gz"
 
 # Load the data
-data = nib.load(data_path).get_fdata()
+data = np.load(data_path)
 data = data.astype(np.float32) / 255.0
-
-data = np.swapaxes(data, 0, 2)
 
 conf_map = np.zeros(data.shape, dtype=np.float32)
 
-start = time.time()
+log_interval = 10
+total_time = 0
 
 # Calculate the confidence map
 for i in range(data.shape[0]):
-    conf_map[i] = confidence_map(data[i])
 
-    if (i + 1) % 10 == 0:
-        print(f"Processed {i+1}/{data.shape[0]} slices in {time.time() - start} seconds")
-        start = time.time()
+    start = time.time()
+    conf_map[i] = confidence_map(data[i])
+    end = time.time()
+
+    total_time += end - start
+
+    if (i + 1) % log_interval == 0:
+        print(f"Processed {i+1}/{data.shape[0]}, average time: {total_time / (i + 1)} seconds, total time: {total_time} seconds, slice shape: {data[i].shape}, estimated total time: {(total_time / (i + 1)) * data.shape[0]} seconds")
 
 conf_map = np.swapaxes(conf_map, 0, 2)
 

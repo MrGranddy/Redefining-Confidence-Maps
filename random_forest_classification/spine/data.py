@@ -7,7 +7,7 @@ splits = [0, 159, 313, 465, 618, 769, 921, 1067, 1217, 1370, 1534, 1682, 1823, 1
 
 def read_labels():
     path = "C:/Users/Bugra/Desktop/masters-thesis/data/spine_labels"
-    labels_path = os.path.join(path, "all.nii")
+    labels_path = os.path.join(path, "all2.nii")
 
     label_images = nib.load(labels_path).get_fdata()[..., 0, :]
     label_images = np.transpose(label_images, (2, 1, 0))
