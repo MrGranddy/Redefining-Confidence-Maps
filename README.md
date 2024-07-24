@@ -1,43 +1,60 @@
 # Ultrasound Confidence Maps with Neural Implicit Representation
 
-This repository contains the implementation of the paper "Ultrasound Confidence Maps with Neural Implicit Representation" by V. Bugra Yesilkaynak, Vanessa Gonzalez Duque, Magdalena Wysocki, Yordanka Velikova, Diana Mateus, and Nassir Navab.
+This repository contains the implementation of the paper "Ultrasound Confidence Maps with Neural Implicit Representation" authored by V. Bugra Yesilkaynak, Vanessa Gonzalez Duque, Magdalena Wysocki, Yordanka Velikova, Diana Mateus, and Nassir Navab.
 
 ## Table of Contents
 
-1. [Introduction](#introduction)
-2. [Methodology](#methodology)
-3. [Datasets](#datasets)
-4. [Installation](#installation)
-5. [Usage](#usage)
-6. [Experiments and Results](#experiments-and-results)
-7. [Discussion](#discussion)
-8. [Conclusion](#conclusion)
-9. [Acknowledgments](#acknowledgments)
+- [Ultrasound Confidence Maps with Neural Implicit Representation](#ultrasound-confidence-maps-with-neural-implicit-representation)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Methodology](#methodology)
+    - [Ultra-NeRF Training](#ultra-nerf-training)
+    - [Confidence Map Computation](#confidence-map-computation)
+  - [Datasets](#datasets)
+  - [Shadow Segmentation Using Random Forest](#shadow-segmentation-using-random-forest)
+  - [References](#references)
 
 ## Introduction
 
-Ultrasound Confidence Map (CM) is an image representation that indicates the reliability of the pixel intensity values presented within ultrasound B-mode images. These maps are highly correlated with the probability of sound reaching specific depths. Our method leverages the physics-inspired intermediate representation maps of Ultra-NeRF[1] to compute CMs with observation-angle awareness, similar to clinical practice.
+The Ultrasound Confidence Map (CM) is an image representation used to indicate the reliability of pixel intensity values within ultrasound B-mode images. These maps correlate closely with the probability of sound reaching specific depths. Our methodology employs the physics-inspired intermediate representation maps from Ultra-NeRF[1] to compute CMs with an observation-angle awareness akin to clinical practice.
 
-This repository includes code to replicate experiments and the newly introduced dataset to facilitate further research in uncertainty quantification of B-mode images.
+This repository includes code to replicate experiments and introduces a new dataset to facilitate further research into uncertainty quantification of B-mode images.
 
 ## Methodology
 
-We propose to compute CMs using the physical principles of how echo traverses human tissue by utilizing Ultra-NeRF. The Ultra-NeRF method receives the 3D absolute positions of the pixels in the images and produces a rendered B-mode image that can be compared with the original image.
+We compute CMs utilizing the physical principles of how echo traverses human tissue, employing the Ultra-NeRF technique. Ultra-NeRF receives the 3D absolute positions of the pixels in images and produces a rendered B-mode image that is then compared with the original image.
 
 ### Ultra-NeRF Training
 
-This work depends on the Ultra-NeRF method to generate the intermediate representation maps. The training of Ultra-NeRF is done using the [official implementation](https://github.com/magdalena-wysocki/ultra-nerf) of the Ultra-NeRF method.
+Ultra-NeRF's training process utilizes its [official implementation](https://github.com/magdalena-wysocki/ultra-nerf). Post training, the "logs" directory will contain the intermediate representation maps which are essential for the next steps in our process.
 
-After training and rendering the dataset following the Ultra-NeRF method, in the "logs" directory, you will find the intermediate representation maps at `{DATASET_NAME}/output_maps_{DATASET_NAME}_model_{NUM_ITERATIONS}_0/params`
-
-Then you can use the `scripts/compute_confidence_maps.py` script to compute the confidence maps with `--params_path` set to the path of the intermediate representation maps.
+To compute the confidence maps, use the `scripts/compute_confidence_maps.py` script with the `--params_path` set to the path containing the intermediate representation maps.
 
 ### Confidence Map Computation
 
-Use the `scripts/compute_confidence_maps.py` script to compute the confidence maps. The script requires the following arguments:
+To compute confidence maps, execute the `scripts/compute_confidence_maps.py` script with the following parameters:
 
 - `--params_path`: Path to the intermediate representation maps.
-- `--output_path`: Path to save the computed confidence maps.
+- `--output_path`: Destination path for the computed confidence maps.
+
+## Datasets
+
+Our new dataset, `low limb leg`, along with two other datasets, `liver` and `spine`, are accessible. Download the `low limb leg` dataset from [here](https://drive.google.com/drive/folders/155NSsl98LdIYrrXGrYi5BJjogqDC08By?usp=sharing). Pre-calculated intermediate representation maps for this dataset are also available in the same location.
+
+## Shadow Segmentation Using Random Forest
+
+Below is a table presenting the quantitative results of shadow segmentation using various confidence map methods on the Liver dataset:
+
+| Method | Dice Score | Hausdorff Distance | Precision |
+|--------|------------|--------------------|-----------|
+| RCM    | 0.4931     | 7.8495             | 0.6111    |
+| MCM    | 0.4930     | 7.1471             | 0.6422    |
+| ACM    | 0.4758     | 7.1475             | 0.6343    |
+| **UCM**    | **0.5038**     | **5.5635**             | **0.7152** |
+
+To conduct shadow segmentation experiments, execute the `shadow_segmentation/experiment.py` script. Necessary files for the liver experiment can be downloaded from the [Google Drive folder](https://drive.google.com/drive/folders/155NSsl98LdIYrrXGrYi5BJjogqDC08By?usp=sharing).
+
+The script utilizes three files: `images.npy` (B-mode images), `masks.npy` (binary masks for bones or solid structures, whose underlay is considered as shadow), and `confidence_maps.npy` (for the chosen segmentation method).
 
 ## References
 

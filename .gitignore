@@ -181,3 +181,5 @@ cython_debug/
 
 datasets/
 logs/
+dataset.zip
+logs.zip
