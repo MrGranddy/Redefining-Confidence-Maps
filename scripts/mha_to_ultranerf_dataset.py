@@ -142,6 +142,7 @@ def main(args):
     image_data, poses, image_spacing = read_mha_file(args.input)
 
     # Create correcting transformation
+    # You can use this function to align your images into the same orientation
     transform = create_linear_transform(0, 0, 0, 0, 0, 180)
 
     # Apply the transformation to the poses
